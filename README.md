@@ -1,77 +1,73 @@
-# Interested in working for Famly?
+# famly
 
-Give us a chance to see your beautiful code! 🤩
+This README contains the setup instructions as well as some of the design decisions for the frontend and backend assignments.
 
-## How to get started
-- Fork this repository
-- Create a small application in React (or another agreed upon framework)
-- Describe your design decisions and setup instructions in the README.md of the forked repository
+# Structure
 
-## The assignment
-You are tasked to build a simple application for a nursery to manage the attendance of children each day.
+The assignments are in their respective folders `frontend` and `backend` and are separate `npm` projects. The following section will explain how to get each of the projects running locally on your machine. Sections after that will explain some design decision for the respective assignments.
 
-The application should be able to do 3 things:
-1. List children with some form of pagination/lazy-loading/infinite-scroll
-2. Checkin a child
-3. Checkout a child
+# Getting started
 
-Don't worry about design or anything like that.
+Note: Both of the projects were tested with `node 18.17.1` and `npm 9.6.7`, any other `node/npm` versions might not work correctly.
+First, clone the repository onto your local machine.
 
-If you have any questions feel free to reach out to the person who sent you the assignment ☺️
+## Frontend
 
-## API Specification
-
-You have received an access token in the email that contained the link to this page.
-
-### Fetch some children from
-
-The API does not support any limit or offset, so the pagination/lazy-loading/infinite-scroll will have to be done client-side only.
+- Navigate into the `frontend` folder
 
 ```
-GET https://app.famly.co/api/daycare/tablet/group
-Arguments: {
-	accessToken: <accessToken>,
-	groupId: '86413ecf-01a1-44da-ba73-1aeda212a196',
-	institutionId: 'dc4bd858-9e9c-4df7-9386-0d91e42280eb'
-}
+cd frontend
 ```
 
-Example in cURL:
+- Create a new `.env` file using the command below and fill in the environment variables
 
-```bash
-curl "https://app.famly.co/api/daycare/tablet/group?accessToken=<accessToken>&groupId=86413ecf-01a1-44da-ba73-1aeda212a196&institutionId=dc4bd858-9e9c-4df7-9386-0d91e42280eb"
+```
+cp .env.example .env
 ```
 
-### Checkin child
-```
-POST https://app.famly.co/api/v2/children/<childId>/checkins
+- Install npm packages
 
-Arguments: {
-	accessToken: <accessToken>
-	pickupTime: 16:00
-}
+```
+npm install
 ```
 
-Example in cURL:
+- Run the project
 
-```bash
-curl \
-  -d 'accessToken=<accessToken>&pickupTime=16:00' \
-  https://app.famly.co/api/v2/children/fcd683d0-bc31-468c-948f-1ca70b91439d/checkins
+```
+npm run dev
 ```
 
-### Checkout child
-```
-POST https://app.famly.co/api/v2/children/<childId>/checkout
-Arguments: {
-	accessToken: <accessToken>
-}
-```
+## Backend
 
-Example in cURL:
+TBD
 
-```bash
-curl \
-  -d 'accessToken=<accessToken>' \
-  https://app.famly.co/api/v2/children/fcd683d0-bc31-468c-948f-1ca70b91439d/checkout
-```
+# Design choices, notes
+
+## Frontend
+
+### Design choices
+
+1. `vite` (React + TS) project using `npm create vite@latest` because it's an easy way to get a minimal React and TypeScript application running and deployed quickly.
+2. `axios` - for network requests, used mainly because of interceptors that allow me to add the `accessToken` to every request. Could be replaced with native `fetch`.
+3. `react-query` - data fetching via hooks. Provides query invalidation, automatic retires, request cancellation, pagination (not used in this case), and many other features out of the box.
+4. Using `react-hook-form` because it makes working with forms easier - validation, sane defaults, error handling...
+5. `eslint` for static analysis and following code standards
+
+### Structure
+
+- React entrypoint in `src/main.tsx` and the root component in `src/App.tsx`
+- React components in `src/components/`
+- API requests grouped in `src/api/`
+- Custom hooks in `src/hooks/`. Contains both hooks for API requests (`api/`) and a custom hook for pagination.
+- Utility functions in `src/lib/`
+- Shared types in `src/types/`
+
+### Possible improvements
+
+- Better error handling and reporting
+- Storing pagination data in the URL
+- Schema validation of API responses
+
+## Backend
+
+TBD
