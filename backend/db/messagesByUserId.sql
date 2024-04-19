@@ -1,0 +1,1 @@
+SELECT `id`, `userId`, `conversationId`, `txt` FROM `message` WHERE `message`.`userId` = 4

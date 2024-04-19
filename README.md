@@ -13,35 +13,61 @@ First, clone the repository onto your local machine.
 
 ## Frontend
 
-- Navigate into the `frontend` folder
+Navigate into the `frontend` folder
 
-```
+```bash
 cd frontend
 ```
 
-- Create a new `.env` file using the command below and fill in the environment variables
+Create a new `.env` file using the command below and fill in the environment variables
 
-```
+```bash
 cp .env.example .env
 ```
 
-- Install npm packages
+Install npm packages
 
-```
+```bash
 npm install
 ```
 
-- Run the project
+Run the project
 
-```
+```bash
 npm run dev
 ```
 
 ## Backend
 
-TBD
+Navigate into the `backend` folder
 
-# Design choices, notes
+```bash
+cd backend
+```
+
+Install npm packages
+
+```bash
+npm install
+```
+
+Run the project
+
+```bash
+npm start
+```
+
+Additional commands
+
+```bash
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+```
+
+# Design choices, notes, ...
 
 ## Frontend
 
@@ -70,4 +96,61 @@ TBD
 
 ## Backend
 
-TBD
+### SQL Queries
+
+1. All messages in any `conversation` sent by the user with user ID `4`
+
+```
+SELECT `id`, `userId`, `conversationId`, `txt` FROM `message` WHERE `message`.`userId` = 4
+```
+
+2. All messages in `conversation` where users 1 and 3 are participating (other users  
+   could also be participating)
+
+```
+SELECT *
+FROM `message`
+WHERE `conversationId` IN (
+	-- Select conversation ids where userId `1` and `3` are participating
+	SELECT `id`
+	FROM `conversation`
+	WHERE `userId` = 1
+		AND `id` IN (
+			SELECT `id`
+			FROM `conversation`
+			WHERE `userId` = 3
+		)
+);
+```
+
+3. All messages in any `conversation` where the message contents include the word  
+   "cake"
+
+```
+SELECT * FROM `message` WHERE `txt` LIKE '%cake%'
+```
+
+### Design choices
+
+- `express` - a lightweight NodeJS server
+- `jest` - testing framework
+- `nanoid` - for generating random ids for children
+
+### Structure
+
+The assignment is set up as a web server that responds to requests. It can be interacted with through the browser - that's why every endpoint only responds to GET requests. The server is listening on `localhost:3000`
+
+- `src/index.js` is the application endpoint, it's where the `express` server is started
+- `src/lib`
+  - `children.js` contains the assignment methods and `findChild` - a utility method
+  - `children.test.js` contains several tests
+- `src/utils` contains a few utility functions
+
+#### Endpoints
+
+- `/` - lists all children
+- `/<child-id>` - lists a single child
+- `/<child-id>/checkin` - checks in a child (timestamped), then redirects back to `/<child-id>`
+- `/<child-id>/checkout` - checks out a child (timestamped), then redirects back to `/<child-id>`
+- `/checked-in` lists children that are currently checked in (and not checked out yet)
+- `/checked-in-for/<hours>` lists children that were checked in _today_ for `<hours>`, it only lists children that are already checked out
